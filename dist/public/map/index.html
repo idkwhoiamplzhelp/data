@@ -1,44 +1,55 @@
 <html>
 
 <head>
-    <title>Map</title>
-    <script src="https://unpkg.com/leaflet@1.5.0/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.0/dist/leaflet.css" />
+	<title>Map</title>
+	<script src="https://unpkg.com/leaflet@1.5.0/dist/leaflet.js">
+	</script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.0/dist/leaflet.css" />
 
-    <script src="https://unpkg.com/leaflet-responsive-popup@0.6.4/leaflet.responsive.popup.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@0.6.4/leaflet.responsive.popup.css" />
+	<script src="https://unpkg.com/leaflet-responsive-popup@0.6.4/leaflet.responsive.popup.js">
+	</script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@0.6.4/leaflet.responsive.popup.css" />
 
-    <style>
-        body {
-            margin: 0;
-        }
+	<style>
+		body {
+			margin: 0;
+		}
 
-        #map {
-            width: 100vw;
-            height: 100vh
-        }
+		#map {
+			width: 100vw;
+			height: 100vh
+		}
 
-        .mark {
-            display: block;
-            max-width: 200px;
-            max-height: 200px;
-            width: auto;
-            height: auto;
-        }
-    </style>
+		.mark {
+			display: block;
+			max-width: 200px;
+			max-height: 200px;
+			width: auto;
+			height: auto;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="map"></div>
-    <script>
+	<div id="map"></div>
+	<script>
+		window.onload = () => {
+            setTimeout(() => {
+                addpolygon()
+                console.log('poly')
+            }, 1500)
+            console.log('load')
+        };
+
         var map;
         var ajaxRequest;
         var plotlist;
         var dumpdata;
         var plotlayers = [];
         var markers = [];
-        var latlon = []
-        var remove = []
+        var latlon = [];
+        var remove = [];
+        var lines = [];
 
 
         async function getdata() {
@@ -58,16 +69,45 @@
         function addmarker(lat, lon, url, comment) {
             var marker = L.marker([lat, lon]).addTo(map);
             var popup = L.popup()
-                .setContent(`<img src=${url} class="mark"><p>Comment => ${comment} (only for vip users)`);
+                .setContent(`<img src=${url} class="mark"><p title="(only for vip users)">Comment => ${comment}`);
             marker.bindPopup(popup)
             markers.push(marker);
         }
 
+
+function getDistance(val) {
+    var origin = val[0];
+    var destination = val[1];
+    var lat1 = origin[0];
+    var lat2 = destination[0]
+var lon1 = origin[1];
+var lon2 = destination[1]
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+
         function addpolygon() {
-            var polygon = L.polyline(latlon, {
-                color: "blue",
-smoothFactor: 0.5
-            }).addTo(map);
+
+            for (let index = 0; index < latlon.length; index++) {
+
+                var first = latlon[index];
+                index = index + 1
+                var second = latlon[index];
+                    if(second == undefined) return;
+                    var f = L.polyline([first, second], {
+                        color: 'red'
+                    })
+var dis = getDistance([first, second])
+f.bindTooltip(`${dis} km`)
+                f.addTo(map);
+lines.push(f);
+            }
+
         }
 
 
@@ -80,13 +120,12 @@ smoothFactor: 0.5
             dumpdata.forEach(e => {
                 if (e.location.lat == 0 && e.location.lon == 0) return;
                 if (e.comment) {
-                    addmarker(lat, lon, e.image, e.comment)
+                    addmarker(e.location.lat, e.location.lon, e.image, e.comment)
                 } else {
                     addmarkernocom(e.location.lat, e.location.lon, e.image)
                 }
             })
             maxmin()
-            addpolygon();
         }
 
         function datamanager() {
@@ -115,7 +154,7 @@ smoothFactor: 0.5
             // set up the map
             map = new L.Map('map');
             var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-            var osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+            var osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors<br>Made by &copy; cybemachine';
             var osm = new L.TileLayer(osmUrl, {
                 minZoom: 2,
                 maxZoom: 19,
@@ -127,7 +166,16 @@ smoothFactor: 0.5
         }
 
         initmap();
-    </script>
+
+        setTimeout(()=>{
+if(!lines.length) {
+    location.reload()
+}
+        }, 5000)
+        setTimeout(()=>{
+        console.log({map, dumpdata,  markers, latlon,  lines})
+        }, 6000)
+	</script>
 </body>
 
 </html>
