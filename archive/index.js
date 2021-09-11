@@ -7,7 +7,7 @@ const Datastore = require('nedb'),
     express = require('express'),
     app = express(),
     db = new Datastore({
-        filename: resolve(__dirname, "db/db")
+        filename: resolve(__dirname, "../db/db")
     }),
     port = process.env.PORT || 3030;
 
@@ -34,18 +34,13 @@ app.get("/", (req, res) => {
 // Show all my submissions
 // GET - /logs
 app.get("/logs", (req, res) => {
-    res.redirect('/logs/logs.html')
+    res.redirect('/logs/index.html')
 })
 
 // Map for data visualization
 // GET - /map
 app.get('/map', (req, res) => {
-    res.redirect('/map/map.html')
-})
-
-// Relese page
-app.all('/dev', (req,res)=>{
-    res.redirect('/dev/index.html')
+    res.redirect('/map/index.html')
 })
 
 // Show all my submissions
@@ -114,6 +109,5 @@ app.delete("/api/one", (req, res) => {
 
 })
 
-app.listen(port, () => {
-    console.log(`https://geo-cam.cybemachine.repl.co/`)
-})
+
+module.exports = app;
