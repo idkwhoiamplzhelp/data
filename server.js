@@ -1,3 +1,4 @@
+//require
 const {
   resolve
 } = require('path');
@@ -5,13 +6,24 @@ const fs = require('fs');
 const logger = require('morgan');
 const Datastore = require('nedb');
 const express = require('express');
+const rateLimit = require("express-rate-limit");
+
+//execute
+const limiter = rateLimit({
+  windowMs: 11 * 60 * 1000,
+  max: 100 
+});
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100
+});
 const app = express();
 var db = new Datastore({
   filename: resolve(__dirname, "./db/db")
 });
-
 db.loadDatabase();
 
+//pass functions to app
 app.use(logger("dev"));
 app.use(express.json({
   limit: '6mb',
@@ -21,16 +33,17 @@ app.use(express.urlencoded({
   limit: '5mb',
   extended: true
 }));
+app.use("/api/", apiLimiter);
 
 var publicc = resolve(__dirname, './public')
 
 // index page
 // GET - /
-app.get("/", (req, res) => {
+app.get("/",limiter, (req, res) => {
   res.sendFile(resolve(publicc,'index.html'))
 })
 
-app.get('/vip', (req, res) => {
+app.get('/vip',limiter, (req, res) => {
   var j = req.headers.authorization;
 
   if (j !== process.env.pass) return  res.status(401).send('401');
@@ -39,19 +52,19 @@ app.get('/vip', (req, res) => {
 
 })
 
-app.get('/map/two', (req,res)=>{
+app.get('/map/two',limiter, (req,res)=>{
   res.sendFile(resolve(publicc, '/map/map.html'))
 })
 
 // Show all my submissions
 // GET - /logs
-app.get("/logs", (req, res) => {
-  res.sendFile(resolve(publicc,'/logs/index.html'))
+app.get("/logs",limiter, (req, res) => {
+  res.sendFile(resolve(publicc,'logs/index.html'))
 })
 
 // Map for data visualization
 // GET - /map
-app.get('/map', (req, res) => {
+app.get('/map',limiter, (req, res) => {
   res.sendFile(resolve(publicc,'/map/index.html'))
 })
 
