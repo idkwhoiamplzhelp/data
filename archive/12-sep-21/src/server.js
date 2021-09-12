@@ -43,11 +43,6 @@ app.get("/", limiter, (req, res) => {
   res.sendFile(resolve(publicc, 'index.html'))
 })
 
-
-app.get('/map/two', limiter, (req, res) => {
-  res.sendFile(resolve(publicc, './map/map.html'))
-})
-
 // Show all my submissions
 // GET - /logs
 app.get("/logs", limiter, (req, res) => {
@@ -57,7 +52,11 @@ app.get("/logs", limiter, (req, res) => {
 // Map for data visualization
 // GET - /map
 app.get('/map', limiter, (req, res) => {
-  res.sendFile(resolve(publicc, './map/index.html'));
+  res.sendFile(resolve(publicc, './map/map.html'));
+})
+
+app.get('/map/two', limiter, (req, res) => {
+  res.sendFile(resolve(publicc, './map/index.html'))
 })
 
 app.get('/api/status', (req,res)=>{

@@ -64,7 +64,7 @@ app.get('/api/status', (req,res)=>{
   const data = {
     uptime: process.uptime(),
     message: 'Ok',
-    date: new Date()
+    date: new Date().getTime() / 1000
   }
 try{
   res.status(200).send(data);
