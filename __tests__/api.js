@@ -1,4 +1,4 @@
-const app = require('../src/server')
+const app = require('../dist/server')
 const supertest = require('supertest')
 const request = supertest(app)
 
@@ -15,8 +15,9 @@ it('/api/status endpoint', async status =>{
   expect(res.body.uptime).toBeGreaterThan(0);
   expect(res.status).toBe(200);
   expect(res.body.message).toBe('Ok');
-  var unix = new Date().getTime() / 1000
   expect(res.body.date >= 0).toBeTruthy();
-  expect(res.body.date).toBeLessThan(unix)
+  expect(res.body.date).toBeLessThan(
+    new Date().getTime() / 1000
+    )
   status()
 })

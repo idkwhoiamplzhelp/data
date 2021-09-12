@@ -1,4 +1,4 @@
-const app = require('../src/server')
+const app = require('../dist/server')
 const supertest = require('supertest')
 const request = supertest(app)
 

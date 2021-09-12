@@ -35,7 +35,7 @@ app.use(express.urlencoded({
 }));
 app.use("/api/", apiLimiter);
 
-var publicc = resolve(__dirname, './public')
+var publicc = resolve(__dirname, '../public')
 
 // index page
 // GET - /
