@@ -177,6 +177,4 @@ app.get('/vip', limiter, (req, res) => {
   require('./vip')(req, res);
 })
 
-app.listen(process.env.PORT, ()=>{
-  console.log(process.env.PORT)
-})
+module.exports = app;
