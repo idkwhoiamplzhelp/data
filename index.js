@@ -1,4 +1,4 @@
-var appdist = require('./dist'),
+var appdist = require('./server.js'),
 http = require('http'),
     apperror = require('./error');
 
