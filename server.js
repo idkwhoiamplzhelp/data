@@ -94,6 +94,16 @@ app.get("/api/lines", (req, res) => {
 app.post("/api", (req, res) => {
   const unixTimeCreated = new Date().getTime();
 
+if(req.body.toString().includes("proto")){
+  res.status(400).send("includes proto which is restricted")
+  return;
+}
+
+if(req.body.toString().includes("constructor.prototype")){
+  res.status(400).send("includes constructor.prototype which is restricted")
+  return;
+}
+
   const newData = Object.assign({
     "created": unixTimeCreated
   }, req.body);
