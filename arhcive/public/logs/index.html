@@ -40,7 +40,7 @@ function setup(){
 }
 
 function myEntryEl(item){
-    const myImage = `<img src="${item.image}">`;
+    const myImage = `<img src="${item.image}" title="${item._id}">`;
     const lat =item.location.lat
     const lon = item.location.lon
     console.log(item.location.lon)

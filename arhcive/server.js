@@ -11,7 +11,7 @@ const rateLimit = require("express-rate-limit");
 //execute
 const limiter = rateLimit({
   windowMs: 11 * 60 * 1000,
-  max: 100 
+  max: 100
 });
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
 });
 const app = express();
 var db = new Datastore({
-  filename: resolve(__dirname, "./db/db")
+  filename: resolve(__dirname, "../db/db")
 });
 db.loadDatabase();
 
@@ -39,34 +39,39 @@ var publicc = resolve(__dirname, './public')
 
 // index page
 // GET - /
-app.get("/",limiter, (req, res) => {
-  res.sendFile(resolve(publicc,'index.html'))
+app.get("/", limiter, (req, res) => {
+  res.sendFile(resolve(publicc, 'index.html'))
 })
 
-app.get('/vip',limiter, (req, res) => {
-  var j = req.headers.authorization;
 
-  if (j !== process.env.pass) return  res.status(401).send('401');
-
-  require('./vip')(req, res);
-
-})
-
-app.get('/map/two',limiter, (req,res)=>{
-  res.sendFile(resolve(publicc, '/map/map.html'))
+app.get('/map/two', limiter, (req, res) => {
+  res.sendFile(resolve(publicc, './map/map.html'))
 })
 
 // Show all my submissions
 // GET - /logs
-app.get("/logs",limiter, (req, res) => {
-  res.sendFile(resolve(publicc,'logs/index.html'))
+app.get("/logs", limiter, (req, res) => {
+  res.sendFile(resolve(publicc, 'logs/index.html'))
 })
 
 // Map for data visualization
 // GET - /map
-app.get('/map',limiter, (req, res) => {
-  res.sendFile(resolve(publicc,'/map/index.html'))
+app.get('/map', limiter, (req, res) => {
+  res.sendFile(resolve(publicc, './map/index.html'));
 })
+
+app.get('/api/status', (req,res)=>{
+  const data = {
+    uptime: process.uptime(),
+    message: 'Ok',
+    date: new Date()
+  }
+try{
+  res.status(200).send(data);
+} catch(e){
+  res.status(500).send(e);
+}
+});
 
 // Show all my submissions
 // our API
@@ -89,20 +94,30 @@ app.get("/api/lines", (req, res) => {
   });
 })
 
+app.get('/api/count', (req,res)=>{
+  var f = req.query.term || req.query.id
+  db.count({ _id:  f }, function (err, count) {
+    if(err) {
+      res.status(400).send(err)
+    };
+    res.json(count);
+  });
+})
+
 // Create a submission
 // POST - /api
 app.post("/api", (req, res) => {
   const unixTimeCreated = new Date().getTime();
 
-if(req.body.toString().includes("proto")){
-  res.status(400).send("includes proto which is restricted")
-  return;
-}
+  if (req.body.toString().includes("proto")) {
+    res.status(400).send("includes proto which is restricted")
+    return;
+  }
 
-if(req.body.toString().includes("constructor.prototype")){
-  res.status(400).send("includes constructor.prototype which is restricted")
-  return;
-}
+  if (req.body.toString().includes("constructor.prototype")) {
+    res.status(400).send("includes constructor.prototype which is restricted")
+    return;
+  }
 
   const newData = Object.assign({
     "created": unixTimeCreated
@@ -151,6 +166,18 @@ app.delete("/api/one", (req, res) => {
       })
     });
 })
+
+
+
+app.get('/vip', limiter, (req, res) => {
+  var j = req.headers.authorization;
+
+  if (j !== process.env.pass) return res.status(401).send('401');
+
+  require('./vip')(req, res);
+})
+
+
 
 
 module.exports = app;

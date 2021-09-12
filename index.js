@@ -1,5 +1,3 @@
-var appdist = require('./server.js'),
-http = require('http'),
-    apperror = require('./error');
-
-    http.createServer(appdist).listen(2000);
+require('http')
+  .createServer(require('./src/server.js'))
+  .listen(2000);
