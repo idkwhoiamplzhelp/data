@@ -1,4 +1,4 @@
-const app = require('../dist/server')
+const app = require('../src/server')
 const supertest = require('supertest')
 const request = supertest(app)
 
@@ -18,6 +18,6 @@ it('/api/status endpoint', async status =>{
   expect(res.body.date >= 0).toBeTruthy();
   expect(res.body.date).toBeLessThan(
     new Date().getTime() / 1000
-    )
+  )
   status()
 })

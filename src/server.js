@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
 });
 const app = express();
 var db = new Datastore({
-  filename: resolve(__dirname, "../db/db")
+  filename: resolve(__dirname, "./db/db")
 });
 db.loadDatabase();
 
@@ -35,7 +35,7 @@ app.use(express.urlencoded({
 }));
 app.use("/api/", apiLimiter);
 
-var publicc = resolve(__dirname, '../public')
+var publicc = resolve(__dirname, './public')
 
 // index page
 // GET - /
@@ -51,7 +51,7 @@ app.get('/map/two', limiter, (req, res) => {
 // Show all my submissions
 // GET - /logs
 app.get("/logs", limiter, (req, res) => {
-  res.sendFile(resolve(publicc, 'logs/index.html'))
+  res.sendFile(resolve(publicc, './logs/index.html'))
 })
 
 // Map for data visualization
@@ -66,11 +66,8 @@ app.get('/api/status', (req,res)=>{
     message: 'Ok',
     date: new Date().getTime() / 1000
   }
-try{
+
   res.status(200).send(data);
-} catch(e){
-  res.status(500).send(e);
-}
 });
 
 // Show all my submissions
