@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
 });
 const app = express();
 var db = new Datastore({
-  filename: resolve(__dirname, "./db/db")
+  filename: resolve(__dirname, "../db/db")
 });
 db.loadDatabase();
 
